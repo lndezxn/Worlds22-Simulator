@@ -1,3 +1,6 @@
+from ast import Try
+import random
+from tokenize import cookie_re
 
 class Team:
     def __init__(self, name, region, rank) -> None:
@@ -16,9 +19,6 @@ class Team:
         self.lose += 1
 
 class Group:
-    name: str
-    teams = []
-
     def __init__(self, name) -> None:
         self.name = name
         self.teams = []
@@ -43,21 +43,18 @@ class Group:
 
 
 class Playin_Stage:
-    groups = []
-
     def __init__(self) -> None:
         self.groups = []
+        self.seq = []
+        for i in range(1):
+            self.seq.append(gen_playin_seq())
 
     def init(self, teams_file, playin_file):
         i = 0
         temp_group_a = Group("A")
         self.groups.append(temp_group_a)
-        
         temp_group_b = Group("B")
         self.groups.append(temp_group_b)
-
-        print(self.groups)
-
         for row in playin_file:
             for each_name in row:
                 for each_team in teams_file:
@@ -65,22 +62,34 @@ class Playin_Stage:
                         self.groups[i].add_team(each_team)
             i += 1
 
-        
     def print_group(self):
         print("Group A")
         for each in self.groups[0].teams:
             print(each.name.upper() + "\t" + str(each.scr) + "\t" + str(each.win) + "/" + str(each.lose))
-        print("Group B")
+        print("\nGroup B")
         for each in self.groups[1].teams:
             print(each.name.upper() + "\t" + str(each.scr) + "\t" + str(each.win) + "/" + str(each.lose))
 
-
-
-
     def match_playin_phase1(self):
         for each_groups in self.groups:
-            for i in range(6):
-                for j in range(i + 1, 6):
-                    each_groups.match_bo1(each_groups.teams[i], each_groups.teams[j])
-    
+            for each_groupseq in self.seq:
+                for each_match in each_groupseq:
+                    each_groups.match_bo1(each_groups.teams[each_match[0]], each_groups.teams[each_match[1]])
 
+
+def gen_playin_seq():
+    matches = []
+    while(len(matches) < 15):
+        contiflag = False
+        team_a = random.randint(0, 5)
+        team_b = random.randint(0, 5)
+        if team_a == team_b:
+            continue
+        for [a, b] in matches:
+            if (a == team_a and b == team_b) or (a == team_b and b == team_a):
+                contiflag = True
+        if contiflag == True:
+            continue
+
+        matches.append([team_a, team_b])
+    return matches
