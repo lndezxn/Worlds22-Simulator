@@ -1,6 +1,4 @@
-from ast import Try
 import random
-from tokenize import cookie_re
 
 class Team:
     def __init__(self, name, region, rank) -> None:
@@ -22,6 +20,7 @@ class Group:
     def __init__(self, name) -> None:
         self.name = name
         self.teams = []
+        self.res = []
 
     def add_team(self, inteam):
         self.teams.append(Team(inteam[0], inteam[1], inteam[2]))
@@ -63,11 +62,14 @@ class Playin_Stage:
             i += 1
 
     def print_group(self):
+        sorted_groups_a = sorted(self.groups[0].teams, key=cmp_team, reverse=True)
+        sorted_groups_b = sorted(self.groups[1].teams, key=cmp_team, reverse=True)
+
         print("Group A")
-        for each in self.groups[0].teams:
+        for each in sorted_groups_a:
             print(each.name.upper() + "\t" + str(each.scr) + "\t" + str(each.win) + "/" + str(each.lose))
         print("\nGroup B")
-        for each in self.groups[1].teams:
+        for each in sorted_groups_b:
             print(each.name.upper() + "\t" + str(each.scr) + "\t" + str(each.win) + "/" + str(each.lose))
 
     def match_playin_phase1(self):
@@ -93,3 +95,6 @@ def gen_playin_seq():
 
         matches.append([team_a, team_b])
     return matches
+
+def cmp_team(x: Team):
+    return x.scr
